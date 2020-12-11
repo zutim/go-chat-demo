@@ -1,0 +1,56 @@
+body{
+    margin: 0 auto;
+    text-align:center;
+    font-family: PingFangSC-Regular, sans-serif;
+}
+.all{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background:linear-gradient(#68d8f1,#3d74b1);
+}
+.title{
+    color:#fff;
+    margin-top:150px;
+    letter-spacing:1px;
+    font-size: 40px;
+    font-family: PingFangSC-Light, sans-serif;
+}
+.tel{
+    height: 36px;
+    width:60%;
+    margin-top:60px;
+    border-radius: 25px;
+    border:1px solid #eee;
+    padding-left: 15px;
+    font-size: 14px;
+    color:#fff;
+    background: rgba(255,255,255,0)
+}
+.password{
+    height: 36px;
+    width:60%;
+    margin-top:20px;
+    border-radius: 25px;
+    border:1px solid #eee;
+    padding-left: 15px;
+    font-size: 14px;
+    color:#fff;
+    background: rgba(255,255,255,0)
+}
+input::placeholder{
+    color:#ccc;
+}
+.btn{
+    height: 36px;
+    width:64%;
+    margin-top:25px;
+    border-radius: 25px;
+    border:0;
+    text-align: center;
+    font-size: 14px;
+    color:#fff;
+    background: #4bbad3;
+    letter-spacing:5px;
+}

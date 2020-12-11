@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<link rel="stylesheet" href="../html/static/css/login.css">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ztm小信</title>
+</head>
+<body>
+    <div class="all">
+        <div class="title">Welcome</div>
+        <div><input type="text" class="tel" id="tel" placeholder="账号"></div>
+        <div><input type="password" class="password" id="password" placeholder="密码"></div>
+        <div><button class="btn" onclick="app.login();">立即登录</button></div>
+    </div>
+</body>
+</html>
+
+<script>
+    var tabIndex = 0;
+    var app = {
+        login: function () {
+            var tel = $("#tel").val();
+            var pwd = $("#password").val();
+            var pdata = {
+                tel: tel,
+                password:pwd
+            };
+            pdata =JSON.stringify(pdata);
+            $.post("/user/auth", pdata,
+                function (res) {
+                    sessionStorage.chatToken = res.data.token;
+                    sessionStorage.userid = res.data.userid;
+                    if (res.code == 200) {
+                        setTimeout(function () {
+                            location.href = "/index";
+                        }, 1800)
+                    } else
+                        alert(res.message);
+                }, "json");
+        }
+    };
+</script>

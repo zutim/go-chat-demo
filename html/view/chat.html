@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ztm小信</title>
+</head>
+<body>
+    <div class="all">
+        <div class="toname"></div>
+        <div class="chat">
+
+        </div>
+        <div style="height: 5px"></div>
+        <div class="foot">
+            <div class="con2">
+                <div class="xin">
+                    <input type="text" id="talk">
+                </div>
+                <button class="btn" onclick="app.chat();">发送</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<style>
+    body{
+        margin: 0 auto;
+        text-align:center;
+        background:#eeeeee ;
+        /*background:linear-gradient(#dc7c20,#e82e84);*/
+    }
+    .all{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    .chat{
+        /*border-top: 1px solid #aaaaaa;*/
+        margin-top:50px;
+        margin-bottom: 50px;
+
+    }
+    .toname{
+        position: fixed;
+        top:0;
+        left:0;
+        color:#fff1d6;
+        font-size: 18px;
+        letter-spacing:3px;
+        padding:10px 0 ;
+        z-index: 9999;
+        overflow: hidden;
+        width:100%;
+        background:#2facc8;
+        border-bottom: 1px solid #aaaaaa;
+    }
+    img{
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+    }
+    .clr{
+        clear:both;
+    }
+    .friend{
+        width:100%;
+    }
+    .friend img{
+        position: absolute;
+        left:10px;
+    }
+    .friend p{
+        position:relative;
+        width:auto;
+        margin-left:60px;
+        margin-right:60px;
+        background: #fff;
+        border-radius: 3px;
+        text-align: left;
+        padding:10px;
+    }
+    .myself{
+        width:100%;
+    }
+    .myself img{
+        position: absolute;
+        right:10px;
+    }
+    .myself p{
+        background:#68cbf1;
+        position:relative;
+        width:auto;
+        margin-left:60px;
+        margin-right:60px;
+        border-radius: 3px;
+        text-align: left;
+        padding:10px;
+    }
+    .foot{
+        position: fixed;
+        bottom: 0;
+        height: 40px;
+        border-top: 1px solid #aaaaaa;
+        width: 100%;
+        text-align: left;
+        background: #2facc8;
+    }
+    .foot .con2{
+        /*position: relative;*/
+        width: auto;
+        margin-left: 10px;
+        margin-right: 105px;
+        margin-top: 5px;
+        text-align: left;
+    }
+    .foot .con2 input{
+        height: 30px;
+        border:0;
+        width:100%;
+        background: #f5f6f6;
+        padding: 0 10px;
+    }
+    .foot .btn{
+        position: absolute;
+        width:70px;
+        right: 5px;
+        bottom: 5px;
+        height: 30px;
+        border-radius: 5px;
+        border:0;
+        text-align: center;
+        font-size: 14px;
+        color:#fff;
+        background: #4e82ce;
+        letter-spacing:6px;
+    }
+    .tel{
+        height: 45px;
+        width:80%;
+        margin-top:80px;
+        border-radius: 25px;
+        border:0;
+        padding-left: 15px;
+        font-size: 20px;
+        color:#999;
+    }
+    input::placeholder{
+        color:#ccc;
+    }
+    .btn{
+        height: 45px;
+        width:80%;
+        margin-top:40px;
+        border-radius: 25px;
+        border:0;
+        text-align: center;
+        font-size: 20px;
+        color:#fff;
+        background: #0ce34e;
+        letter-spacing:15px;
+    }
+</style>
+
+<script src="../html/static/js/ws.js"></script>
+
+<script>
+    var myheadimg = "";
+    var toheadimg = "";
+    var app = {
+        init:function(){
+            $(".toname").html("与"+sessionStorage.chatToUsername+"聊天中");
+            $.ajax({
+                headers: {
+                    "Authorization":"Bearer "+sessionStorage.getItem("chatToken")//此处放置请求到的用户token
+                },
+                url:"/ws/index",
+                type: "get",
+                contentType: "application/json",
+                dataType: 'json',
+                cache: false,
+                async: true,
+                success: function(res) {
+                    if (res.code != 200) {
+                        setTimeout(function () {
+                            location.href = "/user/login";
+                        }, 1800)
+                    }else{
+                        console.log("token存在")
+                    }
+                },
+                error:function() {
+                    alert("请求失败！");
+                }
+            });
+            app.wxinit();
+        },
+        wxinit:function () {
+            let url =  webServer.config.url;
+            let ws = new WebSocket("ws://" + url,['Sec-WebSocket-Protocol']);
+            webServer.ws = ws;
+            webServer.ws.onopen = function(evt){
+                netManager.msg.op = "ready";
+                // netManager.msg.args = sessionStorage.MyUserId;
+                netManager.msg.args = sessionStorage.chatToUserid;
+                netManager.msg.msg = sessionStorage.chatToken;
+                webServer.msgSender(netManager.msg);
+            };
+            webServer.ws.onmessage = function (evt) {//绑定收到消息事件
+                chatManager.msgHandler(evt.data)
+            };
+            webServer.ws.onclose = function (evt) { //绑定关闭或断开连接事件
+                netManager.msg.op = "close";
+                webServer.msgSender(netManager.msg)
+            };
+            webServer.ws.onerror = function (e) {
+
+            }
+        },
+        chat:function () {
+            var msg = {}
+            msg.Message = $("#talk").val();
+            if (msg.Message==""){
+                alert("不能发送空信息")
+                return
+            }
+            chatManager.showMyself(msg,myheadimg);
+            $("#talk").val("");
+            netManager.msg.msg = msg.Message;
+            netManager.msg.op = "chat";
+            netManager.msg.args = sessionStorage.userid;
+            netManager.msg.msgType = sessionStorage.chatToUserid;
+            webServer.msgSender(netManager.msg);
+        }
+    };
+    app.init();
+
+    window.onbeforeunload = function () {
+        netManager.msg.op = "pageClose";
+        webServer.msgSender(netManager.msg)
+        webServer.ws.close();
+    }
+
+    var chatManager ={
+        msgHandler:function(x){
+            let m = webServer.decode(x);
+            switch (m.op) {
+                case "chat":
+                    var msg ={}
+                    msg.Message = m.msg;
+                    chatManager.showFriend(msg,toheadimg);
+                    break;
+                case "record":
+                    var msg = m.msg;
+                    var msg2 = webServer.decode(msg)
+                    users = msg2.Users;
+                    record = msg2.ChatRecord
+
+                    for (var i in users){
+                        if (users[i].id == sessionStorage.userid){
+                            myheadimg = users[i].headimg
+                        }else{
+                            toheadimg = users[i].headimg
+                        }
+                    }
+                    for(let i=record.length-1 ;i>=0;i--){
+                        var MyUserId = sessionStorage.userid
+                        msg3 = webServer.decode(record[i])
+                        if(msg3.To == MyUserId){
+                            chatManager.showFriend(msg3,toheadimg)
+                        }else{
+                            chatManager.showMyself(msg3,myheadimg)
+                        }
+                    }
+                    break;
+                case "connErr":
+                    netManager.msg.op = "close";
+                    webServer.msgSender(netManager.msg)
+                    break;
+                case "connSuccess":
+                    var args = webServer.decode(m.msg);
+                    var html="";
+                    for(var i in args.L){
+                        if(sessionStorage.getItem("tel") != args.L[i].tel){
+                            if(args.L[i].online==1){
+                                html+="<li onclick='app.chatTo("+args.L[i].id+","+1+")'>\n" +
+                                    "                    <img src=\"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3863969437,1273856925&fm=26&gp=0.jpg\">\n" +
+                                    "                    <span>"+args.L[i].username+args.L[i].unread+"</span>\n" +
+                                    "                    <p class='blue'>在线</p>\n" +
+                                    "                </li>";
+                            }else{
+                                html+="<li onclick='app.chatTo("+args.L[i].id+","+0+")'>\n" +
+                                    "                    <img src=\"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3863969437,1273856925&fm=26&gp=0.jpg\">\n" +
+                                    "                    <span>"+args.L[i].username+args.L[i].unread+"</span>\n" +
+                                    "                    <p>离线</p>\n" +
+                                    "                </li>";
+                            }
+                        }
+                    }
+                    $(".chat ul").empty()
+                    $(".chat ul").html(html)
+                    break;
+            }
+            console.log(m)
+        },
+        showFriend:function (msg,toheadimg) {
+            var html="";
+            // var src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3863969437,1273856925&fm=26&gp=0.jpg";
+
+            html+="<div class=\"friend clr\">\n" +
+                "                <img src=\""+toheadimg+"\">\n" +
+                "                <p>"+msg.Message+"</p>" +
+                "            </div>";
+            $(".chat").append(html);
+        },
+        showMyself:function (msg,myheadimg) {
+            var html="";
+            // var src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3106280066,3981715348&fm=11&gp=0.jpg";
+
+            html+="<div class=\"myself clr\">\n" +
+                "                <img src=\""+myheadimg+"\">\n" +
+                "                <p>"+msg.Message+"</p>" +
+                "            </div>";
+            $(".chat").append(html);
+        }
+    }
+
+
+</script>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<link rel="stylesheet" href="../html/static/css/index.css">
+<script src="../html/static/js/ws.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ztm小信</title>
+</head>
+<body>
+    <div class="all">
+        <div class="title">通讯录</div>
+        <div class="chat">
+            <ul>
+
+            </ul>
+        </div>
+
+    </div>
+</body>
+</html>
+
+<script>
+    var app = {
+        init:function(){
+            $.ajax({
+                headers: {
+                    "Authorization":"Bearer "+sessionStorage.getItem("chatToken")//此处放置请求到的用户token
+                },
+                url:"/ws/index",
+                type: "get",
+                contentType: "application/json",
+                dataType: 'json',
+                cache: false,
+                async: true,
+                success: function(res) {
+                    if (res.code != 200) {
+                        setTimeout(function () {
+                            location.href = "/user/login";
+                        }, 1800)
+                    }else{
+                        console.log("token存在")
+                    }
+                },
+                error:function() {
+                    alert("请求失败！");
+                }
+            });
+            app.wxinit();
+        },
+        wxinit:function () {
+            let url = webServer.config.url;
+            let ws = new WebSocket("ws://" + url,['Sec-WebSocket-Protocol']);
+            webServer.ws = ws;
+            webServer.ws.onopen = function(evt){
+                netManager.msg.op = "connection";
+                netManager.msg.msg = sessionStorage.chatToken;
+                webServer.msgSender(netManager.msg);
+            };
+            webServer.ws.onmessage = function (evt) {//绑定收到消息事件
+                netManager.msgHandler(evt.data)
+            };
+            webServer.ws.onclose = function (evt) { //绑定关闭或断开连接事件
+                netManager.msg.op = "close";
+                webServer.msgSender(netManager.msg)
+            };
+            webServer.ws.onerror = function (e) {
+                netManager.msg.op = "error";
+                webServer.msgSender(netManager.msg)
+            }
+        },
+        chatTo:function (e) {
+            userid =$(e).attr("data-userid");
+            console.log(userid)
+            username = $(e).attr("data-username");
+            sessionStorage.chatToUsername = username;
+            sessionStorage.chatToUserid = userid;
+            window.location.href="/index/chat"
+        }
+    };
+    app.init();
+
+</script>
