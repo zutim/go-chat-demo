@@ -1,0 +1,49 @@
+server: # 服务器配置
+  environment: product # 运行环境
+  httpPort: 8080  # 端口号
+  systemName: ego-chat # 系统名称
+  maxResponseLogSize: 2000 # 响应内容截取长度
+  logPath: /tmp/app.log # 日志文件
+  traceHeader: gateway-trace # trace头
+  httpRequestTimeout: 5 # http请求超时时间，单位：秒
+  jwtSign: chat-sign  # jwt的签名
+  debug: on # 日志debug
+  pprof: on
+  task: on
+  swagger: off
+  desKey: ztm12345
+
+db:
+  driver: mysql
+  dbNameKey: qmplus
+  dbHostKey: localhost
+  dbPortKey: 3306
+  dbUserKey: root
+  dbPassKey: 123456
+
+mysql:    # mysql配置。支持多数据库，读写分离
+  maxIdleConnections: 10  # 最大空闲连接数
+  maxOpenConnections: 40  # 最大打开连接数
+  maxLifeTime: 8          # 超时时间
+  dsn: root:123456@tcp(127.0.0.1:3306)/qmplus?charset=utf8mb4   # data source
+#  other:
+#    sources:
+#      - root:123456@tcp(127.0.0.1:3307)/other?charset=utf8mb4
+#    replicas:
+#      - root:123456@tcp(127.0.0.1:3308)/other?charset=utf8mb4
+#    tables:
+#      - orders
+
+redis:
+  host: 127.0.0.1
+  poolSize: 6 # 连接池数量
+  maxRetries: 3 # 最大尝试次数
+  idleTimeout: 3 # 超时时间
+#  minIdleConns: 6 # 在启动阶段创建指定数量的Idle连接，并长期维持idle状态的连接数不少于指定数量；。
+  cluster:   # 集群配置
+    - 127.0.0.1:6320
+    - 127.0.0.1:6321
+    - 127.0.0.1:6322
+    - 127.0.0.1:6323
+    - 127.0.0.1:6324
+    - 127.0.0.1:6325
