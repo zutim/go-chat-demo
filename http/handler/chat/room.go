@@ -1,7 +1,7 @@
 package chat
 
 import (
-	"github.com/ebar-go/ego"
+	"github.com/zutim/ego"
 	"sync"
 )
 

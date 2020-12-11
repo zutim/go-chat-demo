@@ -7,9 +7,9 @@ import (
 	"chat/pkg/utils"
 	"encoding/json"
 	"fmt"
-	"github.com/ebar-go/ego"
-	"github.com/ebar-go/egu"
 	"github.com/gin-gonic/gin"
+	"github.com/zutim/ego"
+	"github.com/zutim/egu"
 	"strings"
 )
 

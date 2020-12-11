@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/des"
 	"encoding/hex"
-	"github.com/ebar-go/ego/errors"
+	"github.com/zutim/ego/errors"
 )
 
 func Encrypt(text string, key []byte) (string, error) {

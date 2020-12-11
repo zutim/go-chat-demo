@@ -3,8 +3,8 @@ package chat
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ebar-go/ego/app"
-	"github.com/ebar-go/egu"
+	"github.com/zutim/ego/app"
+	"github.com/zutim/egu"
 	"strconv"
 	"time"
 )

@@ -6,8 +6,8 @@ import (
 	"chat/http/response"
 	"chat/pkg/app"
 	"chat/pkg/model/data"
-	"github.com/ebar-go/ego/http/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/zutim/ego/http/middleware"
 )
 func LoadRoute(router *gin.Engine) {
 	//导入静态地址

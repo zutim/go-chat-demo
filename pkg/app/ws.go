@@ -1,8 +1,6 @@
 package app
 
-import (
-	"github.com/ebar-go/ego"
-)
+import "github.com/zutim/ego"
 
 var ws ego.WsServer
 

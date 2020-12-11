@@ -2,9 +2,9 @@ package app
 
 import (
 	"chat/config"
-	"github.com/ebar-go/egu"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/zutim/egu"
 	"sync"
 )
 

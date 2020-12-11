@@ -2,9 +2,9 @@ package main
 
 import (
 	"chat/http/route"
-	"github.com/ebar-go/ego"
-	"github.com/ebar-go/ego/app"
-	"github.com/ebar-go/egu"
+	"github.com/zutim/ego"
+	"github.com/zutim/ego/app"
+	"github.com/zutim/egu"
 )
 
 func init() {

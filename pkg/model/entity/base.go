@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/ebar-go/ego/component/mysql"
+import "github.com/zutim/ego/component/mysql"
 
 type BaseEntity struct {
 	mysql.Model

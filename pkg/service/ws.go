@@ -2,7 +2,7 @@ package service
 
 import (
 	"chat/pkg/model/data"
-	"github.com/ebar-go/ego/app"
+	"github.com/zutim/ego/app"
 )
 
 type wsService struct {
